@@ -36,7 +36,6 @@ const femaleImages = [
   "Sartin Sartina,S.H.,M.Kn.jpg",
   "Siti Hikmah Nuraeni,S.H.jpg"
 ];
-
 const allImages = [...maleImages, ...femaleImages];
 let currentImage = 0;
 
@@ -51,7 +50,6 @@ function showLoading(show) {
 
 function loadImage(index) {
   showLoading(true);
-
   const imageName = allImages[index];
   const imageElement = document.getElementById('faceImage');
   const blurOverlay = document.getElementById('blurOverlay');
@@ -76,19 +74,35 @@ function loadImage(index) {
   options.forEach(name => {
     const btn = document.createElement('button');
     btn.textContent = name;
+
     btn.onclick = () => {
       blurOverlay.style.display = 'none';
       const buttons = optionsContainer.querySelectorAll('button');
+
       buttons.forEach(button => {
         button.disabled = true;
         if (button.textContent === correctName) {
           button.style.backgroundColor = '#7fff7f';
         }
       });
-      if (name !== correctName) {
+
+      if (name === correctName) {
+        btn.style.backgroundColor = '#7fff7f';
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+      } else {
         btn.style.backgroundColor = '#ff7f7f';
+        const gameContainer = document.querySelector('.game-container');
+        gameContainer.classList.add('shake');
+        setTimeout(() => {
+          gameContainer.classList.remove('shake');
+        }, 500);
       }
     };
+
     optionsContainer.appendChild(btn);
   });
 }
