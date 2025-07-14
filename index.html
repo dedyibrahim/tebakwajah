@@ -2,26 +2,31 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tebak Wajah</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- ANIMASI BINTANG & BUBBLE -->
+  <!-- Latar belakang efek -->
   <div class="background">
     <div class="stars"></div>
     <div class="bubbles"></div>
   </div>
 
-  <!-- GAME CONTAINER -->
+  <!-- Kontainer game -->
   <div class="game-container">
     <div class="image-wrapper">
-      <img id="faceImage" src="images/Agung Hening Indradi Prajanto,S.H.,M.Hum.jpg" alt="Tebak Wajah">
+      <img id="faceImage" src="" alt="Tebak Wajah">
       <div class="blur-overlay" id="blurOverlay"></div>
     </div>
     <div class="options" id="optionsContainer"></div>
     <button id="nextBtn">Selanjutnya</button>
+  </div>
+
+  <!-- Loading overlay -->
+  <div id="loading">
+    <div class="spinner"></div>
   </div>
 
   <script src="script.js"></script>

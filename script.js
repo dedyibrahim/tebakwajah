@@ -1,12 +1,12 @@
 const maleImages = [
-  "Agung Hening Indradi Prajanto,S.H.,M.Hum.jpg",
+  "Agung Herning Indradi Prajanto,S.H.,M.Hum.jpg",
   "Akhmad Fibriansyah Bagan,S.H.,MKn.jpg",
   "Anshar Amal,S.H.,M.Kn.jpg",
   "Dr.Bachrudin,S.H.,M.Kn.jpg",
   "Dr.Kaharudin Kamaru,S.H.,M.Kn.jpg",
   "Dr.Saharjo,,S.H.,M.Kn.,M.H.jpg",
-  "Dr.Sri Wahyu Jatmiko,S.H.,M.H.jpg",
-  "Dr.Sudriman,S.H.,M.Kn.jpeg",
+  "Dr.Sri Wahyu Jatmikowati,S.H.,M.H.jpg",
+  "Dr.Sudirman,S.H.,M.Kn.jpeg",
   "Emmanuel Mali, S.H., M.H.jpg",
   "H.Benizon,S.H.jpg",
   "H.Samsuri,S.H.,M.Kn.jpg",
@@ -23,12 +23,12 @@ const maleImages = [
 
 const femaleImages = [
   "Abigael Agnes Serworwora,S.H.jpeg",
-  "Arian,S.H.,M.Kn.jpg",
+  "Arlan,S.H.,M.Kn.jpg",
   "Dewantari Handayani,S.H.,MPA.jpg",
   "Dr.Christina Ella Yonatan,S.H.,M.Kn.jpg",
-  "DR.Nurlinda Simanjorang,S.H.,Sp.n.,M.Kn.jpg",
+  "DR.Nurlinda Simanjorang,S.H.,Sp.N,M.Kn.jpg",
   "Ellies Daini,S.H.,M.Kn.jpg",
-  "Leiga ALFITA Soelaiman.SH.,MH.jpg",
+  "Leiga Afita Soelaiman.SH.,MH.jpg",
   "Maria Astuti.S.H.jpg",
   "Nila Rufaida,S.H.jpg",
   "Ratna Nelly Riyanty,S.H.Sp.N.,M.H.jpg",
@@ -44,21 +44,28 @@ function shuffle(array) {
   return [...array].sort(() => Math.random() - 0.5);
 }
 
+function showLoading(show) {
+  const loading = document.getElementById('loading');
+  loading.style.display = show ? 'flex' : 'none';
+}
+
 function loadImage(index) {
+  showLoading(true);
+
   const imageName = allImages[index];
   const imageElement = document.getElementById('faceImage');
   const blurOverlay = document.getElementById('blurOverlay');
   const optionsContainer = document.getElementById('optionsContainer');
 
+  imageElement.onload = () => showLoading(false);
   imageElement.src = `images/${imageName}`;
   blurOverlay.style.display = 'block';
   optionsContainer.innerHTML = '';
 
   const correctName = imageName.replace(/\.(jpg|jpeg|png)/i, '');
+  const genderList = femaleImages.includes(imageName) ? femaleImages : maleImages;
 
-  const sourceArray = femaleImages.includes(imageName) ? femaleImages : maleImages;
-
-  let options = shuffle(sourceArray)
+  let options = shuffle(genderList)
     .filter(name => name !== imageName)
     .slice(0, 3)
     .map(name => name.replace(/\.(jpg|jpeg|png)/i, ''));
@@ -69,23 +76,19 @@ function loadImage(index) {
   options.forEach(name => {
     const btn = document.createElement('button');
     btn.textContent = name;
-
     btn.onclick = () => {
       blurOverlay.style.display = 'none';
-
       const buttons = optionsContainer.querySelectorAll('button');
       buttons.forEach(button => {
         button.disabled = true;
         if (button.textContent === correctName) {
-          button.style.backgroundColor = '#7fff7f'; // benar
+          button.style.backgroundColor = '#7fff7f';
         }
       });
-
       if (name !== correctName) {
-        btn.style.backgroundColor = '#ff7f7f'; // salah
+        btn.style.backgroundColor = '#ff7f7f';
       }
     };
-
     optionsContainer.appendChild(btn);
   });
 }
