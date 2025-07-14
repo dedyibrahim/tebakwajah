@@ -1,0 +1,142 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: start;
+  background: linear-gradient(-45deg, #2c3e50, #2980b9, #27ae60, #8e44ad);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+  overflow: auto;
+}
+
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.game-container {
+  margin-top: 60px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  padding: 20px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+.image-wrapper {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 20px;
+}
+
+.image-wrapper img {
+  max-width: 300px;
+  border-radius: 12px;
+}
+
+.blur-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 30%;
+  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.3);
+  transition: all 0.5s ease-in-out;
+  pointer-events: none;
+  border-radius: 0 0 12px 12px;
+  z-index: 1;
+}
+
+.options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+button {
+  padding: 10px 20px;
+  margin-top: 15px;
+  background-color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-weight: bold;
+}
+
+button:hover {
+  background-color: #eee;
+}
+
+/* BACKGROUND LAYERS */
+.background {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+
+.stars::before {
+  content: '';
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  background: transparent url('https://www.transparenttextures.com/patterns/stardust.png') repeat;
+  animation: starMove 60s linear infinite;
+  opacity: 0.3;
+}
+
+@keyframes starMove {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(-500px, -500px); }
+}
+
+.bubbles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.bubbles::before, .bubbles::after {
+  content: '';
+  position: absolute;
+  bottom: -150px;
+  width: 20px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  animation: floatBubbles 20s linear infinite;
+  box-shadow: 
+    100px 400px 0 0 rgba(255,255,255,0.1),
+    200px 600px 0 0 rgba(255,255,255,0.08),
+    300px 200px 0 0 rgba(255,255,255,0.12),
+    400px 800px 0 0 rgba(255,255,255,0.09),
+    500px 500px 0 0 rgba(255,255,255,0.11),
+    600px 700px 0 0 rgba(255,255,255,0.1),
+    700px 300px 0 0 rgba(255,255,255,0.07);
+}
+
+.bubbles::after {
+  left: 50%;
+  width: 25px;
+  height: 25px;
+  animation-duration: 25s;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+@keyframes floatBubbles {
+  0% { transform: translateY(0) scale(1); }
+  100% { transform: translateY(-1000px) scale(1.5); }
+}
