@@ -1,22 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dadu Wajah</title>
+  <title>Wajah Ketua Wilayah</title>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
     body {
       margin: 0;
       padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
       background: linear-gradient(-45deg, #2c3e50, #2980b9, #27ae60, #8e44ad);
       background-size: 400% 400%;
       animation: gradientBG 15s ease infinite;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
       overflow: hidden;
-      font-family: sans-serif;
     }
 
     @keyframes gradientBG {
@@ -29,51 +31,95 @@
       width: 300px;
       height: 300px;
       perspective: 1000px;
+      margin-bottom: 40px;
+      position: relative;
     }
 
     .cube {
-      width: 300px;
-      height: 300px;
+      width: 100%;
+      height: 100%;
       position: relative;
       transform-style: preserve-3d;
-      transition: transform 0.5s ease;
+      transition: transform 1s ease;
     }
 
     .face {
       position: absolute;
       width: 300px;
       height: 300px;
-      border: 2px solid #fff;
-      background: #fff;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
-      backface-visibility: hidden;
+      background-color: #ffffff;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
     }
 
     .face img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
     }
 
-    .front  { transform: rotateY(0deg) translateZ(150px); }
+    .front  { transform: rotateY(  0deg) translateZ(150px); }
     .back   { transform: rotateY(180deg) translateZ(150px); }
-    .right  { transform: rotateY(90deg) translateZ(150px); }
+    .right  { transform: rotateY( 90deg) translateZ(150px); }
     .left   { transform: rotateY(-90deg) translateZ(150px); }
-    .top    { transform: rotateX(90deg) translateZ(150px); }
+    .top    { transform: rotateX( 90deg) translateZ(150px); }
     .bottom { transform: rotateX(-90deg) translateZ(150px); }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background: rgba(255,255,255,0.6);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      position: relative;
+      z-index: 2;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: rgba(255,255,255,0.9);
+    }
+
+    .loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid #3498db;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      z-index: 3;
+      display: none;
+    }
+
+    @keyframes spin {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
   </style>
 </head>
 <body>
+
   <div class="scene">
+    <div class="loading" id="loading"></div>
     <div class="cube" id="cube">
-      <div class="face front"><img id="img1" src="" alt="1"></div>
-      <div class="face back"><img id="img2" src="" alt="2"></div>
-      <div class="face right"><img id="img3" src="" alt="3"></div>
-      <div class="face left"><img id="img4" src="" alt="4"></div>
-      <div class="face top"><img id="img5" src="" alt="5"></div>
-      <div class="face bottom"><img id="img6" src="" alt="6"></div>
+      <div class="face front"><img src="" alt="Foto" /></div>
+      <div class="face back"><img src="" alt="Foto" /></div>
+      <div class="face right"><img src="" alt="Foto" /></div>
+      <div class="face left"><img src="" alt="Foto" /></div>
+      <div class="face top"><img src="" alt="Foto" /></div>
+      <div class="face bottom"><img src="" alt="Foto" /></div>
     </div>
   </div>
+
+  <button onclick="acakDadu()">Putar Dadu</button>
 
   <script>
     const maleImages = [
@@ -86,17 +132,7 @@
       "Dr.Sri Wahyu Jatmikowati,S.H.,M.H.jpg",
       "Dr.Sudirman,S.H.,M.Kn.jpeg",
       "Emmanuel Mali, S.H., M.H.jpg",
-      "H.Benizon,S.H.jpg",
-      "H.Samsuri,S.H.,M.Kn.jpg",
-      "Helmy,S.H.,M.Kn.jpg",
-      "I Wayan Muntra.S.H.jpg",
-      "Muhammad Taufik,S.H.,M.Kn.jpeg",
-      "Novrial Bahrun,S.H.,M.Kn.jpg",
-      "Sri Wahyu Sugeng,S.H.jpg",
-      "Taufan Ladjantja,S.H.,M.Kn.jpg",
-      "Wahyu Dwi Cahyono,S.H.,M.Kn.jpg",
-      "Wedy Asmara.,,S.H.,Sp.N.jpg",
-      "Zul April,S.H.jpg"
+      "H.Benizon,S.H.jpg"
     ];
 
     const femaleImages = [
@@ -104,87 +140,68 @@
       "Arlan,S.H.,M.Kn.jpg",
       "Dewantari Handayani,S.H.,MPA.jpg",
       "Dr.Christina Ella Yonatan,S.H.,M.Kn.jpg",
-      "DR.Nurlinda Simanjorang,S.H.,Sp.N,M.Kn.jpg",
-      "Ellies Daini,S.H.,M.Kn.jpg",
-      "Leiga Afita Soelaiman.SH.,MH.jpg",
-      "Maria Astuti.S.H.jpg",
-      "Nila Rufaida,S.H.jpg",
-      "Ratna Nelly Riyanty,S.H.Sp.N.,M.H.jpg",
-      "Rosemerry Aref,S.H.,M.Kn.jpg",
-      "Sartin Sartina,S.H.,M.Kn.jpg",
-      "Siti Hikmah Nuraeni,S.H.jpg"
+      "DR.Nurlinda Simanjorang,S.H.,Sp.N,M.Kn.jpg"
     ];
 
     const allImages = [...maleImages, ...femaleImages];
+    let intervalID = null;
 
-    function shuffle(array) {
-      return array.sort(() => Math.random() - 0.5);
+    function getRandomImage() {
+      return "images/" + allImages[Math.floor(Math.random() * allImages.length)];
     }
 
     function loadRandomFaces() {
-      const selected = shuffle(allImages).slice(0, 6);
-      selected.forEach((name, index) => {
-        const img = document.getElementById(`img${index + 1}`);
-        img.src = `images/${name}`;
-        img.alt = name;
-      });
+      const imgs = document.querySelectorAll(".face img");
+      imgs.forEach(img => img.src = getRandomImage());
     }
 
-    loadRandomFaces();
+    function acakDadu() {
+      const cube = document.getElementById("cube");
+      const loading = document.getElementById("loading");
+      loading.style.display = "block";
 
-    // Interaktif drag rotate
-    const cube = document.getElementById('cube');
-    let rotationX = 0;
-    let rotationY = 0;
-    let isDragging = false;
-    let lastX, lastY;
+      let x = 0;
+      let y = 0;
 
-    const rotateCube = (dx, dy) => {
-      rotationX += dy * 0.5;
-      rotationY += dx * 0.5;
-      cube.style.transform = `rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
-    };
+      // Putar dadu setiap 100ms
+      intervalID = setInterval(() => {
+        x += 30;
+        y += 45;
+        cube.style.transform = `rotateX(${x}deg) rotateY(${y}deg)`;
+      }, 100);
 
-    cube.addEventListener('mousedown', (e) => {
-      isDragging = true;
-      lastX = e.clientX;
-      lastY = e.clientY;
-      document.addEventListener('mousemove', onMouseMove);
-    });
+      // Setelah 5 detik, stop dan acak wajah + confetti
+      setTimeout(() => {
+        clearInterval(intervalID);
 
-    const onMouseMove = (e) => {
-      if (!isDragging) return;
-      const dx = e.clientX - lastX;
-      const dy = e.clientY - lastY;
-      rotateCube(dx, dy);
-      lastX = e.clientX;
-      lastY = e.clientY;
-    };
+        // Pilih sisi acak untuk berhenti
+        const faces = [
+          { x: 0,   y: 0 },
+          { x: 0,   y: 180 },
+          { x: 0,   y: -90 },
+          { x: 0,   y: 90 },
+          { x: -90, y: 0 },
+          { x: 90,  y: 0 }
+        ];
+        const f = faces[Math.floor(Math.random() * faces.length)];
+        cube.style.transform = `rotateX(${f.x}deg) rotateY(${f.y}deg)`;
 
-    document.addEventListener('mouseup', () => {
-      isDragging = false;
-      document.removeEventListener('mousemove', onMouseMove);
-    });
+        // Ganti gambar wajah
+        loadRandomFaces();
 
-    // Touch support
-    cube.addEventListener('touchstart', (e) => {
-      isDragging = true;
-      lastX = e.touches[0].clientX;
-      lastY = e.touches[0].clientY;
-    });
+        // Confetti muncul dari tengah
+        confetti({
+          particleCount: 200,
+          spread: 80,
+          origin: { y: 0.5 }
+        });
 
-    cube.addEventListener('touchmove', (e) => {
-      if (!isDragging) return;
-      const dx = e.touches[0].clientX - lastX;
-      const dy = e.touches[0].clientY - lastY;
-      rotateCube(dx, dy);
-      lastX = e.touches[0].clientX;
-      lastY = e.touches[0].clientY;
-    });
+        // Sembunyikan loading
+        loading.style.display = "none";
+      }, 2000); // 5 detik
+    }
 
-    cube.addEventListener('touchend', () => {
-      isDragging = false;
-    });
+    window.onload = loadRandomFaces;
   </script>
 </body>
 </html>
