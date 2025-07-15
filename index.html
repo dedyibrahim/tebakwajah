@@ -53,6 +53,7 @@
       justify-content: center;
       align-items: center;
       overflow: hidden;
+      border-radius: 12px;
     }
 
     .face img {
@@ -119,67 +120,46 @@
     </div>
   </div>
 
-  <button onclick="acakDadu()">Putar Dadu</button>
+  <button onclick="putarDaduBerurutan()">Putar Dadu</button>
 
   <script>
-   const maleImages = [
-  "Agung Herning Indradi Prajanto,S.H.,M.Hum.jpg",
-  "Akhmad Fibriansyah Bagan,S.H.,MKn.jpg",
-  "Anshar Amal,S.H.,M.Kn.jpg",
-  "Dr.Bachrudin,S.H.,M.Kn.jpg",
-  "Dr.Kaharudin Kamaru,S.H.,M.Kn.jpg",
-  "Dr.Saharjo,,S.H.,M.Kn.,M.H.jpg",
-  "Dr.Sri Wahyu Jatmikowati,S.H.,M.H.jpg",
-  "Dr.Sudirman,S.H.,M.Kn.jpeg",
-  "Emmanuel Mali, S.H., M.H.jpg",
-  "H.Benizon,S.H.jpg",
-  "H.Samsuri,S.H.,M.Kn.jpg",
-  "Helmy,S.H.,M.Kn.jpg",
-  "I Wayan Muntra.S.H.jpg",
-  "Muhammad Taufik,S.H.,M.Kn.jpeg",
-  "Novrial Bahrun,S.H.,M.Kn.jpg",
-  "Sri Wahyu Sugeng,S.H.jpg",
-  "Taufan Ladjantja,S.H.,M.Kn.jpg",
-  "Wahyu Dwi Cahyono,S.H.,M.Kn.jpg",
-  "Wedy Asmara.,,S.H.,Sp.N.jpg",
-  "Zul April,S.H.jpg"
-];
+    const urutanKetua = [
+      "Dewantari Handayani,S.H.,MPA.jpg",
+      "Ratna Nelly Riyanty,S.H.Sp.N.,M.H.jpg",
+      "Sri Wahyu Sugeng,S.H.jpg", // Datuk (Sumbar)
+      "Dr.Christina Ella Yonatan,S.H.,M.Kn.jpg",
+      "Dr.Sri Wahyu Jatmikowati,S.H.,M.H.jpg", // Mamiek (Jatim)
+      "Ellies Daini,S.H.,M.Kn.jpg",
+      "Arlan,S.H.,M.Kn.jpg",
+      "Rosemerry Aref,S.H.,M.Kn.jpg",
+      "Wahyu Dwi Cahyono,S.H.,M.Kn.jpg",
+      "Dr.Bachrudin,S.H.,M.Kn.jpg",
+      "Anshar Amal,S.H.,M.Kn.jpg",
+      "H.Benizon,S.H.jpg",
+      "Helmy,S.H.,M.Kn.jpg",
+      "Sri Wahyu Sugeng,S.H.jpg",
+      "DR.Nurlinda Simanjorang,S.H.,Sp.N,M.Kn.jpg",
+      "H.Samsuri,S.H.,M.Kn.jpg",
+      "Siti Hikmah Nuraeni,S.H.jpg",
+      "Emmanuel Mali, S.H., M.H.jpg",
+      "I Wayan Muntra.S.H.jpg",
+      "Akhmad Fibriansyah Bagan,S.H.,MKn.jpg",
+      "Agung Herning Indradi Prajanto,S.H.,M.Hum.jpg",
+      "Dr.Kaharudin Kamaru,S.H.,M.Kn.jpg",
+      "Zul April,S.H.jpg",
+      "Muhammad Taufik,S.H.,M.Kn.jpeg",
+      "Wedy Asmara.,,S.H.,Sp.N.jpg",
+      "Leiga Afita Soelaiman.SH.,MH.jpg",
+      "Maria Astuti.S.H.jpg",
+      "Dr.Saharjo,,S.H.,M.Kn.,M.H.jpg",
+      "Sartin Sartina,S.H.,M.Kn.jpg",
+      "Nila Rufaida,S.H.jpg",
+      "Dr.Sudirman,S.H.,M.Kn.jpeg"
+    ];
 
-const femaleImages = [
-  "Abigael Agnes Serworwora,S.H.jpeg",
-  "Arlan,S.H.,M.Kn.jpg",
-  "Dewantari Handayani,S.H.,MPA.jpg",
-  "Dewantari Handayani,S.H.,MPA.jpg",
-  "Dewantari Handayani,S.H.,MPA.jpg",
-  "Dewantari Handayani,S.H.,MPA.jpg",
-  "Dewantari Handayani,S.H.,MPA.jpg",
-  "Dewantari Handayani,S.H.,MPA.jpg",
-  "Dewantari Handayani,S.H.,MPA.jpg",
-  "Dr.Christina Ella Yonatan,S.H.,M.Kn.jpg",
-  "DR.Nurlinda Simanjorang,S.H.,Sp.N,M.Kn.jpg",
-  "Ellies Daini,S.H.,M.Kn.jpg",
-  "Leiga Afita Soelaiman.SH.,MH.jpg",
-  "Maria Astuti.S.H.jpg",
-  "Nila Rufaida,S.H.jpg",
-  "Ratna Nelly Riyanty,S.H.Sp.N.,M.H.jpg",
-  "Rosemerry Aref,S.H.,M.Kn.jpg",
-  "Sartin Sartina,S.H.,M.Kn.jpg",
-  "Siti Hikmah Nuraeni,S.H.jpg"
-];
+    let currentIndex = 0;
 
-    const allImages = [...maleImages, ...femaleImages];
-    let intervalID = null;
-
-    function getRandomImage() {
-      return "images/" + allImages[Math.floor(Math.random() * allImages.length)];
-    }
-
-    function loadRandomFaces() {
-      const imgs = document.querySelectorAll(".face img");
-      imgs.forEach(img => img.src = getRandomImage());
-    }
-
-    function acakDadu() {
+    function putarDaduBerurutan() {
       const cube = document.getElementById("cube");
       const loading = document.getElementById("loading");
       loading.style.display = "block";
@@ -187,18 +167,16 @@ const femaleImages = [
       let x = 0;
       let y = 0;
 
-      // Putar dadu setiap 100ms
-      intervalID = setInterval(() => {
+      const intervalID = setInterval(() => {
         x += 30;
         y += 45;
         cube.style.transform = `rotateX(${x}deg) rotateY(${y}deg)`;
       }, 100);
 
-      // Setelah 5 detik, stop dan acak wajah + confetti
       setTimeout(() => {
         clearInterval(intervalID);
 
-        // Pilih sisi acak untuk berhenti
+        // Atur posisi acak dari sisi (biar variasi)
         const faces = [
           { x: 0,   y: 0 },
           { x: 0,   y: 180 },
@@ -210,22 +188,30 @@ const femaleImages = [
         const f = faces[Math.floor(Math.random() * faces.length)];
         cube.style.transform = `rotateX(${f.x}deg) rotateY(${f.y}deg)`;
 
-        // Ganti gambar wajah
-        loadRandomFaces();
+        // Tampilkan wajah sesuai urutan
+        const imgs = document.querySelectorAll(".face img");
+        imgs.forEach(img => {
+          img.src = "images/" + urutanKetua[currentIndex % urutanKetua.length];
+        });
 
-        // Confetti muncul dari tengah
+        currentIndex++;
+
         confetti({
           particleCount: 200,
           spread: 80,
           origin: { y: 0.5 }
         });
 
-        // Sembunyikan loading
         loading.style.display = "none";
-      }, 2000); // 5 detik
+      }, 2000);
     }
 
-    window.onload = loadRandomFaces;
+    window.onload = () => {
+      const imgs = document.querySelectorAll(".face img");
+      imgs.forEach((img, i) => {
+        img.src = "images/" + urutanKetua[i % urutanKetua.length];
+      });
+    };
   </script>
 </body>
 </html>
