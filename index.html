@@ -1,33 +1,190 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Guess the Notary</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dadu Wajah</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(-45deg, #2c3e50, #2980b9, #27ae60, #8e44ad);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+      font-family: sans-serif;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .scene {
+      width: 300px;
+      height: 300px;
+      perspective: 1000px;
+    }
+
+    .cube {
+      width: 300px;
+      height: 300px;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.5s ease;
+    }
+
+    .face {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      border: 2px solid #fff;
+      background: #fff;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      backface-visibility: hidden;
+    }
+
+    .face img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .front  { transform: rotateY(0deg) translateZ(150px); }
+    .back   { transform: rotateY(180deg) translateZ(150px); }
+    .right  { transform: rotateY(90deg) translateZ(150px); }
+    .left   { transform: rotateY(-90deg) translateZ(150px); }
+    .top    { transform: rotateX(90deg) translateZ(150px); }
+    .bottom { transform: rotateX(-90deg) translateZ(150px); }
+  </style>
 </head>
 <body>
-  <div class="background">
-    <div class="stars"></div>
-    <div class="bubbles"></div>
-  </div>
-
-  <div id="loading">
-    <div class="spinner"></div>
-  </div>
-
-  <div class="game-container">
-    <div class="image-wrapper">
-      <img id="faceImage" src="" alt="Notary">
-      <div id="blurOverlay" class="blur-overlay"></div>
+  <div class="scene">
+    <div class="cube" id="cube">
+      <div class="face front"><img id="img1" src="" alt="1"></div>
+      <div class="face back"><img id="img2" src="" alt="2"></div>
+      <div class="face right"><img id="img3" src="" alt="3"></div>
+      <div class="face left"><img id="img4" src="" alt="4"></div>
+      <div class="face top"><img id="img5" src="" alt="5"></div>
+      <div class="face bottom"><img id="img6" src="" alt="6"></div>
     </div>
-    <div id="optionsContainer" class="options"></div>
-    <button id="nextBtn">Selanjutnya</button>
   </div>
 
-  <!-- Confetti -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-  <script src="script.js"></script>
+  <script>
+    const maleImages = [
+      "Agung Herning Indradi Prajanto,S.H.,M.Hum.jpg",
+      "Akhmad Fibriansyah Bagan,S.H.,MKn.jpg",
+      "Anshar Amal,S.H.,M.Kn.jpg",
+      "Dr.Bachrudin,S.H.,M.Kn.jpg",
+      "Dr.Kaharudin Kamaru,S.H.,M.Kn.jpg",
+      "Dr.Saharjo,,S.H.,M.Kn.,M.H.jpg",
+      "Dr.Sri Wahyu Jatmikowati,S.H.,M.H.jpg",
+      "Dr.Sudirman,S.H.,M.Kn.jpeg",
+      "Emmanuel Mali, S.H., M.H.jpg",
+      "H.Benizon,S.H.jpg",
+      "H.Samsuri,S.H.,M.Kn.jpg",
+      "Helmy,S.H.,M.Kn.jpg",
+      "I Wayan Muntra.S.H.jpg",
+      "Muhammad Taufik,S.H.,M.Kn.jpeg",
+      "Novrial Bahrun,S.H.,M.Kn.jpg",
+      "Sri Wahyu Sugeng,S.H.jpg",
+      "Taufan Ladjantja,S.H.,M.Kn.jpg",
+      "Wahyu Dwi Cahyono,S.H.,M.Kn.jpg",
+      "Wedy Asmara.,,S.H.,Sp.N.jpg",
+      "Zul April,S.H.jpg"
+    ];
+
+    const femaleImages = [
+      "Abigael Agnes Serworwora,S.H.jpeg",
+      "Arlan,S.H.,M.Kn.jpg",
+      "Dewantari Handayani,S.H.,MPA.jpg",
+      "Dr.Christina Ella Yonatan,S.H.,M.Kn.jpg",
+      "DR.Nurlinda Simanjorang,S.H.,Sp.N,M.Kn.jpg",
+      "Ellies Daini,S.H.,M.Kn.jpg",
+      "Leiga Afita Soelaiman.SH.,MH.jpg",
+      "Maria Astuti.S.H.jpg",
+      "Nila Rufaida,S.H.jpg",
+      "Ratna Nelly Riyanty,S.H.Sp.N.,M.H.jpg",
+      "Rosemerry Aref,S.H.,M.Kn.jpg",
+      "Sartin Sartina,S.H.,M.Kn.jpg",
+      "Siti Hikmah Nuraeni,S.H.jpg"
+    ];
+
+    const allImages = [...maleImages, ...femaleImages];
+
+    function shuffle(array) {
+      return array.sort(() => Math.random() - 0.5);
+    }
+
+    function loadRandomFaces() {
+      const selected = shuffle(allImages).slice(0, 6);
+      selected.forEach((name, index) => {
+        const img = document.getElementById(`img${index + 1}`);
+        img.src = `images/${name}`;
+        img.alt = name;
+      });
+    }
+
+    loadRandomFaces();
+
+    // Interaktif drag rotate
+    const cube = document.getElementById('cube');
+    let rotationX = 0;
+    let rotationY = 0;
+    let isDragging = false;
+    let lastX, lastY;
+
+    const rotateCube = (dx, dy) => {
+      rotationX += dy * 0.5;
+      rotationY += dx * 0.5;
+      cube.style.transform = `rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
+    };
+
+    cube.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      document.addEventListener('mousemove', onMouseMove);
+    });
+
+    const onMouseMove = (e) => {
+      if (!isDragging) return;
+      const dx = e.clientX - lastX;
+      const dy = e.clientY - lastY;
+      rotateCube(dx, dy);
+      lastX = e.clientX;
+      lastY = e.clientY;
+    };
+
+    document.addEventListener('mouseup', () => {
+      isDragging = false;
+      document.removeEventListener('mousemove', onMouseMove);
+    });
+
+    // Touch support
+    cube.addEventListener('touchstart', (e) => {
+      isDragging = true;
+      lastX = e.touches[0].clientX;
+      lastY = e.touches[0].clientY;
+    });
+
+    cube.addEventListener('touchmove', (e) => {
+      if (!isDragging) return;
+      const dx = e.touches[0].clientX - lastX;
+      const dy = e.touches[0].clientY - lastY;
+      rotateCube(dx, dy);
+      lastX = e.touches[0].clientX;
+      lastY = e.touches[0].clientY;
+    });
+
+    cube.addEventListener('touchend', () => {
+      isDragging = false;
+    });
+  </script>
 </body>
 </html>
