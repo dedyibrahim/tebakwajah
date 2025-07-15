@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ketua Wilayah IPPAT</title>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(-45deg, #2c3e50, #2980b9, #27ae60, #8e44ad);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      overflow: hidden;
+      color: #333;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Struktur seperti buku/kartu */
+    .card-container {
+      width: 320px;
+      height: 420px; /* Sedikit lebih tinggi untuk nama yang panjang */
+      perspective: 1500px; /* Penting untuk efek 3D */
+      margin-bottom: 30px;
+    }
+
+    .card {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transition: transform 1s;
+      transform-style: preserve-3d;
+    }
+
+    /* Kelas ini akan ditambahkan/dihapus oleh JavaScript untuk membalik kartu */
+    .card.is-flipped {
+      transform: rotateY(180deg);
+    }
+
+    .card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden; /* Sembunyikan sisi belakang saat diputar */
+      background-color: #f9f9f9;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      overflow: hidden;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .card-face-belakang {
+      transform: rotateY(180deg);
+    }
+    
+    .card-face img {
+      width: 100%;
+      height: 250px;
+      object-fit: contain; /* Agar foto tidak terpotong */
+      border-radius: 10px;
+      background-color: #fff;
+    }
+    
+    .card-face .info {
+        text-align: center;
+        margin-top: 15px;
+        padding: 0 10px;
+        height: 100px; /* Beri ruang yang cukup untuk nama */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .card-face .info h3 {
+        margin: 10px 0 5px 0;
+        font-size: 1.1em;
+        line-height: 1.3;
+    }
+
+    .card-face .info p {
+        margin: 0;
+        font-size: 0.9em;
+        color: #666;
+    }
+
+    /* Tombol Navigasi */
+    .navigasi {
+        display: flex;
+        gap: 20px;
+    }
+
+    button {
+      padding: 12px 25px;
+      font-size: 16px;
+      font-weight: bold;
+      background: rgba(255,255,255,0.7);
+      border: 2px solid rgba(255,255,255,0.9);
+      border-radius: 10px;
+      cursor: pointer;
+      position: relative;
+      z-index: 2;
+      transition: all 0.3s ease;
+      color: #2c3e50;
+    }
+
+    button:hover {
+      background: rgba(255,255,255,1);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    button:disabled {
+      background: rgba(200,200,200,0.5);
+      border-color: rgba(200,200,200,0.7);
+      cursor: not-allowed;
+      color: #777;
+      transform: none;
+      box-shadow: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card-container">
+    <div class="card" id="card">
+      <div class="card-face card-face-depan" id="halamanDepan">
+        <img src="" alt="Foto Ketua" />
+        <div class="info">
+            <h3 id="namaDepan"></h3>
+            <p>Ketua Wilayah IPPAT</p>
+        </div>
+      </div>
+      <div class="card-face card-face-belakang" id="halamanBelakang">
+        <img src="" alt="Foto Ketua" />
+        <div class="info">
+            <h3 id="namaBelakang"></h3>
+            <p>Ketua Wilayah IPPAT</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="navigasi">
+    <button id="tombolSebelumnya" onclick="halamanSebelumnya()">Sebelumnya</button>
+    <button id="tombolBerikutnya" onclick="halamanBerikutnya()">Berikutnya</button>
+  </div>
+
+  <script>
+    // Data ketua, diubah menjadi object untuk menyimpan nama dan file gambar
+    const daftarKetua = [
+      { nama: "Dewantari Handayani, S.H., MPA.", file: "Dewantari Handayani,S.H.,MPA.jpg" },
+      { nama: "Ratna Nelly Riyanty, S.H. Sp.N., M.H.", file: "Ratna Nelly Riyanty,S.H.Sp.N.,M.H.jpg" },
+      { nama: "Sri Wahyu Sugeng, S.H.", file: "Sri Wahyu Sugeng,S.H.jpg" },
+      { nama: "Dr. Christina Ella Yonatan, S.H., M.Kn.", file: "Dr.Christina Ella Yonatan,S.H.,M.Kn.jpg" },
+      { nama: "Dr. Sri Wahyu Jatmikowati, S.H., M.H.", file: "Dr.Sri Wahyu Jatmikowati,S.H.,M.H.jpg" },
+      { nama: "Ellies Daini, S.H., M.Kn.", file: "Ellies Daini,S.H.,M.Kn.jpg" },
+      { nama: "Arlan, S.H., M.Kn.", file: "Arlan,S.H.,M.Kn.jpg" },
+      { nama: "Rosemerry Arief, S.H., M.Kn.", file: "Rosemerry Aref,S.H.,M.Kn.jpg" },
+      { nama: "Wahyu Dwi Cahyono, S.H., M.Kn.", file: "Wahyu Dwi Cahyono,S.H.,M.Kn.jpg" },
+      { nama: "Dr. Bachrudin, S.H., M.Kn.", file: "Dr.Bachrudin,S.H.,M.Kn.jpg" },
+      { nama: "Anshar Amal, S.H., M.Kn.", file: "Anshar Amal,S.H.,M.Kn.jpg" },
+      { nama: "H. Benizon, S.H.", file: "H.Benizon,S.H.jpg" },
+      { nama: "Helmy, S.H., M.Kn.", file: "Helmy,S.H.,M.Kn.jpg" },
+      { nama: "Sri Wahyu Sugeng, S.H.", file: "Sri Wahyu Sugeng,S.H.jpg" },
+      { nama: "DR. Nurlinda Simanjorang, S.H., Sp.N, M.Kn.", file: "DR.Nurlinda Simanjorang,S.H.,Sp.N,M.Kn.jpg" },
+      { nama: "H. Samsuri, S.H., M.Kn.", file: "H.Samsuri,S.H.,M.Kn.jpg" },
+      { nama: "Siti Hikmah Nuraeni, S.H.", file: "Siti Hikmah Nuraeni,S.H.jpg" },
+      { nama: "Emmanuel Mali, S.H., M.H.", file: "Emmanuel Mali, S.H., M.H.jpg" },
+      { nama: "I Wayan Muntra, S.H.", file: "I Wayan Muntra.S.H.jpg" },
+      { nama: "Akhmad Fibriansyah Bagan, S.H., M.Kn.", file: "Akhmad Fibriansyah Bagan,S.H.,MKn.jpg" },
+      { nama: "Agung Herning Indradi Prajanto, S.H., M.Hum.", file: "Agung Herning Indradi Prajanto,S.H.,M.Hum.jpg" },
+      { nama: "Dr. Kaharudin Kamaru, S.H., M.Kn.", file: "Dr.Kaharudin Kamaru,S.H.,M.Kn.jpg" },
+      { nama: "Zul April, S.H.", file: "Zul April,S.H.jpg" },
+      { nama: "Muhammad Taufik, S.H., M.Kn.", file: "Muhammad Taufik,S.H.,M.Kn.jpeg" },
+      { nama: "Wedy Asmara, S.H., Sp.N.", file: "Wedy Asmara.,,S.H.,Sp.N.jpg" },
+      { nama: "Leiga Afita Soelaiman, S.H., M.H.", file: "Leiga Afita Soelaiman.SH.,MH.jpg" },
+      { nama: "Maria Astuti, S.H.", file: "Maria Astuti.S.H.jpg" },
+      { nama: "Dr. Saharjo, S.H., M.Kn., M.H.", file: "Dr.Saharjo,,S.H.,M.Kn.,M.H.jpg" },
+      { nama: "Sartin Sartina, S.H., M.Kn.", file: "Sartin Sartina,S.H.,M.Kn.jpg" },
+      { nama: "Nila Rufaida, S.H.", file: "Nila Rufaida,S.H.jpg" },
+      { nama: "Dr. Sudirman, S.H., M.Kn.", file: "Dr.Sudirman,S.H.,M.Kn.jpeg" }
+    ];
+
+    let currentIndex = 0;
+    let isFlipped = false; // Melacak status kartu (terbalik atau tidak)
+    const card = document.getElementById('card');
+    const halamanDepan = document.getElementById('halamanDepan');
+    const halamanBelakang = document.getElementById('halamanBelakang');
+    const tombolSebelumnya = document.getElementById('tombolSebelumnya');
+    const tombolBerikutnya = document.getElementById('tombolBerikutnya');
+    
+    // Fungsi untuk memperbarui konten (gambar dan nama) pada satu sisi kartu
+    function updatePageContent(halamanElement, index) {
+        const ketua = daftarKetua[index];
+        if (!ketua) return;
+
+        halamanElement.querySelector('img').src = 'images/' + ketua.file;
+        halamanElement.querySelector('h3').textContent = ketua.nama;
+    }
+    
+    // Fungsi untuk mengaktifkan/menonaktifkan tombol navigasi
+    function updateTombol() {
+        tombolSebelumnya.disabled = (currentIndex === 0);
+        tombolBerikutnya.disabled = (currentIndex === daftarKetua.length - 1);
+    }
+    
+    function halamanBerikutnya() {
+        if (currentIndex >= daftarKetua.length - 1) return;
+        
+        // Tentukan sisi mana yang tersembunyi untuk diisi data berikutnya
+        const halamanUntukUpdate = isFlipped ? halamanDepan : halamanBelakang;
+        updatePageContent(halamanUntukUpdate, currentIndex + 1);
+        
+        // Balik kartu
+        card.classList.toggle('is-flipped');
+        isFlipped = !isFlipped;
+        
+        currentIndex++;
+        updateTombol();
+        
+        // Beri efek confetti
+        confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+    }
+
+    function halamanSebelumnya() {
+        if (currentIndex <= 0) return;
+        
+        // Tentukan sisi mana yang tersembunyi untuk diisi data sebelumnya
+        const halamanUntukUpdate = isFlipped ? halamanDepan : halamanBelakang;
+        updatePageContent(halamanUntukUpdate, currentIndex - 1);
+        
+        // Balik kartu dengan logika yang sama
+        card.classList.toggle('is-flipped');
+        isFlipped = !isFlipped;
+        
+        currentIndex--;
+        updateTombol();
+    }
+    
+    // Inisialisasi saat halaman pertama kali dimuat
+    window.onload = () => {
+        // Muat data pertama di halaman depan
+        updatePageContent(halamanDepan, 0);
+        // Siapkan data berikutnya di halaman belakang agar siap dibalik
+        if (daftarKetua.length > 1) {
+            updatePageContent(halamanBelakang, 1);
+        }
+        // Atur status tombol
+        updateTombol();
+    };
+  </script>
+</body>
+</html>
